@@ -53,6 +53,30 @@ class Textinp(pygame.sprite.Sprite):
         pygame.draw.rect(screen, self.color, self.rect1.inflate(5, 5), 2)
 
 
+class Post(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.color = (255, 255, 255)
+        self.bg = (0, 255, 0)
+        self.pos = (x, y)
+        self.font = pygame.font.Font(None, 30)
+        self.text = 'po'
+        self.rect1 = pygame.rect.Rect(x, y, 30, 30)
+
+    def on_off(self):
+        return self.bg == (0, 255, 0)
+
+    def change(self):
+        if self.bg == (255, 0, 0):
+            self.bg = (0, 255, 0)
+        else:
+            self.bg = (255, 0, 0)
+
+    def render(self, screen):
+        pygame.draw.rect(screen, self.bg, self.rect1)
+        screen.blit(self.font.render(self.text, True, self.color), self.pos)
+
+
 r = True
 r1 = True
 mas = int(input())
@@ -133,6 +157,7 @@ text_box = Textinp(10, 400, (255, 255, 255), (0, 0, 0), 350, 30, 40)
 check_box = Textinp(400, 400, (255, 255, 255), (0, 255, 0), 60, 20, 30, text='Поиск')
 adres_box = Textinp(10, 10, (255, 255, 255), (0, 50, 100), 540, 20, 20)
 check_box2 = Textinp(500, 400, (255, 255, 255), (255, 0, 0), 60, 20, 30, text='Сброc')
+post_box = Post(560, 10)
 # Переключаем экран и ждем закрытия окна.
 pygame.display.flip()
 running = True
@@ -262,13 +287,14 @@ while running:
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             elif check_box.rect1.collidepoint(*pos):
-                print(1)
                 if text_box.text != '':
                     res = get_coors(text_box.text)
-                    print(res)
                     if res[0][0] is None:
                         continue
-                    adres_box.text = res[2] + ' ' + res[1]
+                    if post_box.on_off():
+                        adres_box.text = res[2] + ' ' + res[1]
+                    else:
+                        adres_box.text = res[1]
                     metka = get_coors(adres_box.text)[0]
                     reset = False
                     first, second = res[0]
@@ -279,12 +305,27 @@ while running:
                 text_box.text = ''
                 adres_box.text = ''
                 map_upload(first, second, mas, map_type_box.curr_type())
+            elif post_box.rect1.collidepoint(*pos):
+                post_box.change()
+                if text_box.text != '' or adres_box.text != '':
+                    if text_box.text == '':
+                        res = get_coors(adres_box.text)
+                    else:
+                        res = get_coors(text_box.text)
+                    if res[0][0] is None:
+                        continue
+                    metka = res[0]
+                    if post_box.on_off():
+                        adres_box.text = res[2] + ' ' + res[1]
+                    else:
+                        adres_box.text = res[1]
         screen.blit(pygame.image.load("map.png"), (0, 0))
         map_type_box.render(screen)
         text_box.render(screen)
         check_box.render(screen)
         adres_box.render(screen)
         check_box2.render(screen)
+        post_box.render(screen)
         pygame.display.flip()
 pygame.quit()
 if os.path.exists("map.txt"):
