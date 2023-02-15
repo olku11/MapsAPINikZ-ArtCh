@@ -38,6 +38,7 @@ class Mapt(pygame.sprite.Sprite):
         screen.blit(self.font.render(self.text, True, self.color), self.pos)
 
 
+# Различные поля, по типу кнопки сброса, поиска, поля ввода
 class Textinp(pygame.sprite.Sprite):
     def __init__(self, x, y, color, bg, width, height, size, text=''):
         super().__init__()
@@ -53,6 +54,7 @@ class Textinp(pygame.sprite.Sprite):
         pygame.draw.rect(screen, self.color, self.rect1.inflate(5, 5), 2)
 
 
+# Кнопка для отображения Почт.Индекса
 class Post(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -64,7 +66,7 @@ class Post(pygame.sprite.Sprite):
         self.rect1 = pygame.rect.Rect(x, y, 30, 30)
 
     def on_off(self):
-        return self.bg == (0, 255, 0)
+        return self.bg == (0, 255, 0)  # Если зеленая-почтовый индекс отображается
 
     def change(self):
         if self.bg == (255, 0, 0):
@@ -96,6 +98,7 @@ with open(map_file, "wb") as file:
     file.write(response.content)
 
 
+# Отображение карты по z
 def map_upload(first, second, mas, map):
     global metka
     pts = []
@@ -119,6 +122,7 @@ def map_upload(first, second, mas, map):
         file.write(response.content)
 
 
+# Получение координат, почтового индекса и адреса объекта
 def get_coors(toponym_name):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
     geocoder_params = {
@@ -157,7 +161,7 @@ text_box = Textinp(10, 400, (255, 255, 255), (0, 0, 0), 350, 30, 40)
 check_box = Textinp(400, 400, (255, 255, 255), (0, 255, 0), 60, 20, 30, text='Поиск')
 adres_box = Textinp(10, 10, (255, 255, 255), (0, 50, 100), 540, 20, 20)
 check_box2 = Textinp(500, 400, (255, 255, 255), (255, 0, 0), 60, 20, 30, text='Сброc')
-post_box = Post(560, 10)
+post_box = Post(570, 400)
 # Переключаем экран и ждем закрытия окна.
 pygame.display.flip()
 running = True
@@ -165,7 +169,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEUP:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEUP:  # Приближение
             if r:
                 os.remove(map_file)
             if mas <= 16:
@@ -177,7 +181,7 @@ while running:
                 pygame.display.flip()
             else:
                 r = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEDOWN:
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEDOWN:  # Увеличение
             if r:
                 os.remove(map_file)
             if mas >= 3:
@@ -191,6 +195,7 @@ while running:
                 r = False
             pygame.display.flip()
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+            # Движение, также предусмотрено движение по кргу земного шара
             a = 450 / (8 * 2 ** (mas - 2.6675))
             second = str(float(second) + a)
             if 0 <= abs(float(second)) <= 180:
@@ -266,7 +271,7 @@ while running:
                 pygame.display.flip()
             else:
                 first = str(float(first) + a)
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:  # Печатаем, из-за тех.проблем нельзя сделать . вместо нее печатается ю
             if event.key == pygame.K_BACKSPACE:
                 text_box.text = text_box.text[:-1]
             else:
@@ -276,17 +281,14 @@ while running:
                     text_box.text += ALP_BIG[event.unicode]
                 else:
                     text_box.text += event.unicode
-        if event.type == pygame.KEYDOWN:
-            map_upload(first, second, mas, map_type_box.curr_type())
-
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            if map_type_box.rect_.collidepoint(*pos):
+            pos = pygame.mouse.get_pos()  # Плзиция мышки
+            if map_type_box.rect_.collidepoint(*pos):  # Изменяем тип карты
                 map_type_box.change_type()
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
-            elif check_box.rect1.collidepoint(*pos):
+            elif check_box.rect1.collidepoint(*pos):  # Поиск по адресу
                 if text_box.text != '':
                     res = get_coors(text_box.text)
                     if res[0][0] is None:
@@ -299,13 +301,13 @@ while running:
                     reset = False
                     first, second = res[0]
                     map_upload(first, second, mas, map_type_box.curr_type())
-            elif check_box2.rect1.collidepoint(*pos):
+            elif check_box2.rect1.collidepoint(*pos):  # Сброс
                 reset = True
                 metka = None
                 text_box.text = ''
                 adres_box.text = ''
                 map_upload(first, second, mas, map_type_box.curr_type())
-            elif post_box.rect1.collidepoint(*pos):
+            elif post_box.rect1.collidepoint(*pos):  # Почтовый индекс
                 post_box.change()
                 if text_box.text != '' or adres_box.text != '':
                     if text_box.text == '':
