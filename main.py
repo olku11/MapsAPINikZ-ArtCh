@@ -55,10 +55,10 @@ class Textinp(pygame.sprite.Sprite):
 
 r = True
 r1 = True
-mas = float(input())
+mas = int(input())
 first = input()
 second = input()
-map_request = f"http://static-maps.yandex.ru/1.x/?ll={first},{second}&spn={mas},{mas}&l=sat"
+map_request = f"http://static-maps.yandex.ru/1.x/?ll={first},{second}&z={mas}&l=sat"
 response = requests.get(map_request)
 
 if not response:
@@ -77,9 +77,11 @@ def map_upload(first, second, mas, map):
     pts = []
     if metka is not None:
         pts.append(f"{metka[0]},{metka[1]},pm2dgm")
-    pts = "pt=" + "~".join(pts)
-
-    map_request = f"http://static-maps.yandex.ru/1.x/?ll={first},{second}&spn={mas},{mas}&l={map}&{pts}"
+        pts = "pt=" + "~".join(pts)
+    if pts:
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={first},{second}&z={mas}&l={map}&{pts}"
+    else:
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={first},{second}&z={mas}&l={map}"
     response = requests.get(map_request)
 
     if not response:
@@ -137,24 +139,24 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEDOWN:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEUP:
             if r:
                 os.remove(map_file)
-            if mas <= 20:
+            if mas <= 16:
                 mas += 1
-            if 0 < mas < 21:
+            if 2 <= mas <= 17:
                 r = True
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             else:
                 r = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEUP:
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_PAGEDOWN:
             if r:
                 os.remove(map_file)
-            if mas > 1:
+            if mas >= 3:
                 mas -= 1
-            if 21 > mas > 0:
+            if 17 >= mas >= 2:
                 map_upload(first, second, mas, map_type_box.curr_type())
                 r = True
                 screen.blit(pygame.image.load(map_file), (0, 0))
