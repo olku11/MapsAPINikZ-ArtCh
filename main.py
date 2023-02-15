@@ -132,6 +132,7 @@ map_type_box = Mapt(10, 50)
 text_box = Textinp(10, 400, (255, 255, 255), (0, 0, 0), 350, 30, 40)
 check_box = Textinp(400, 400, (255, 255, 255), (0, 255, 0), 60, 20, 30, text='Поиск')
 adres_box = Textinp(10, 10, (255, 255, 255), (0, 50, 100), 540, 20, 20)
+check_box2 = Textinp(500, 400, (255, 255, 255), (255, 0, 0), 60, 20, 30, text='Сброc')
 # Переключаем экран и ждем закрытия окна.
 pygame.display.flip()
 running = True
@@ -267,18 +268,23 @@ while running:
                     print(res)
                     if res[0][0] is None:
                         continue
-                    data2 = [None]
-                    data3 = [None]
                     adres_box.text = res[2] + ' ' + res[1]
                     metka = get_coors(adres_box.text)[0]
                     reset = False
                     first, second = res[0]
                     map_upload(first, second, mas, map_type_box.curr_type())
+            elif check_box2.rect1.collidepoint(*pos):
+                reset = True
+                metka = None
+                text_box.text = ''
+                adres_box.text = ''
+                map_upload(first, second, mas, map_type_box.curr_type())
         screen.blit(pygame.image.load("map.png"), (0, 0))
         map_type_box.render(screen)
         text_box.render(screen)
         check_box.render(screen)
         adres_box.render(screen)
+        check_box2.render(screen)
         pygame.display.flip()
 pygame.quit()
 if os.path.exists("map.txt"):
