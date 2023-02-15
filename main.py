@@ -165,45 +165,81 @@ while running:
                 r = False
             pygame.display.flip()
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            second = str(float(second) + mas)
+            a = 450 / (8 * 2 ** (mas - 2.6675))
+            second = str(float(second) + a)
             if 0 <= abs(float(second)) <= 180:
                 if os.path.exists("map.txt"):
                     os.remove(map_file)
+                if float(first) > 180:
+                    first = str(-(180 - float(first) % 180))
+                if float(first) < -180:
+                    first = str(abs(float(first)) % 180)
+                if float(second) > 90:
+                    second = str(-(90 - float(second) % 90))
+                if float(second) < -90:
+                    second = str(90 - abs(float(second)) % 90)
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             else:
-                second = str(float(second) - mas)
+                second = str(float(second) - a)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            second = str(float(second) - mas)
+            a = 450 / (8 * 2 ** (mas - 2.6675))
+            second = str(float(second) - a)
             if 0 <= abs(float(second)) <= 180:
                 if os.path.exists("map.txt"):
                     os.remove(map_file)
+                if float(first) > 180:
+                    first = str(-(180 - float(first) % 180))
+                if float(first) < -180:
+                    first = str(abs(float(first)) % 180)
+                if float(second) > 90:
+                    second = str(-(90 - float(second) % 90))
+                if float(second) < -90:
+                    second = str(90 - abs(float(second)) % 90)
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             else:
-                second = str(float(second) + mas)
+                second = str(float(second) + a)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-            first = str(float(first) + mas)
+            a = 600 / (4.56555 * 2 ** (mas - 2.678))
+            first = str(float(first) + a)
             if 0 <= abs(float(first)) <= 180:
                 if os.path.exists("map.txt"):
                     os.remove(map_file)
+                if float(first) > 180:
+                    first = str(-(180 - float(first) % 180))
+                if float(first) < -180:
+                    first = str(abs(float(first)) % 180)
+                if float(second) > 90:
+                    second = str(-(90 - float(second) % 90))
+                if float(second) < -90:
+                    second = str(90 - abs(float(second)) % 90)
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             else:
-                first = str(float(first) - mas)
+                first = str(float(first) - a)
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            first = str(float(first) - mas)
+            a = 600 / (4.56555 * 2 ** (mas - 2.678))
+            first = str(float(first) - a)
             if 0 <= abs(float(first)) <= 180:
                 if os.path.exists("map.txt"):
                     os.remove(map_file)
+                if float(first) > 180:
+                    first = str(-(180 - float(first) % 180))
+                if float(first) < -180:
+                    first = str(abs(float(first)) % 180)
+                if float(second) > 90:
+                    second = str(-(90 - float(second) % 90))
+                if float(second) < -90:
+                    second = str(90 - abs(float(second)) % 90)
                 map_upload(first, second, mas, map_type_box.curr_type())
                 screen.blit(pygame.image.load(map_file), (0, 0))
                 pygame.display.flip()
             else:
-                first = str(float(first) + mas)
+                first = str(float(first) + a)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 text_box.text = text_box.text[:-1]
